@@ -1,0 +1,13 @@
+# FixedPortals configuration
+
+# Configuration version. Do not modify.
+version: 1
+
+# Display debug log messages.
+debug: false
+
+# Create link automatically when a player uses a Nether portal.
+autolink: true
+
+# Portal database file.
+databasePath: "plugins/FixedPortals/portals.db"

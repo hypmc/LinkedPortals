@@ -1,0 +1,14 @@
+name: FixedPortals
+description: Fixed portal destinations
+author: Torm
+main: no.hyp.fixedportals.FixedPortalsPlugin
+api-version: 1.13
+version: 1.0.0
+permissions:
+  fixedPortals:
+    description: All FixedPortals permissions.
+    default: op
+commands:
+  netherportal:
+    description: View and link portals.
+    permission: fixedPortals
