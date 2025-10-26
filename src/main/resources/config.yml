@@ -1,4 +1,4 @@
-# FixedPortals configuration
+# LinkedPortals configuration
 
 # Configuration version. Do not modify.
 version: 1
@@ -6,8 +6,11 @@ version: 1
 # Display debug log messages.
 debug: false
 
-# Create link automatically when a player uses a Nether portal.
+# Link portals automatically when a player uses a Nether portal that is not
+# already linked.
 autolink: true
 
-# Portal database file.
-databasePath: "plugins/FixedPortals/portals.db"
+# If a portal is automatically linked to a destination portal, and the
+# destination is not already linked, link the destination portal back to the
+# origin portal too.
+backlink: true

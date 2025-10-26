@@ -1,4 +1,4 @@
-package no.hyp.fixedportals;
+package no.hyp.linkedportals;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,13 +12,11 @@ import java.util.UUID;
  */
 public class Link {
 
-    final UUID worldUid;
+    final int i;
 
-    final int x;
+    final int j;
 
-    final int y;
-
-    final int z;
+    final int k;
 
     final UUID destinationWorldUid;
 
@@ -28,11 +26,10 @@ public class Link {
 
     final int destinationZ;
 
-    public Link(UUID worldUid, int x, int y, int z, UUID destinationWorldUid, int destinationX, int destinationY, int destinationZ) {
-        this.worldUid = worldUid;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public Link(int i, int j, int k, UUID destinationWorldUid, int destinationX, int destinationY, int destinationZ) {
+        this.i = i;
+        this.j = j;
+        this.k = k;
         this.destinationWorldUid = destinationWorldUid;
         this.destinationX = destinationX;
         this.destinationY = destinationY;
@@ -41,25 +38,21 @@ public class Link {
 
     public Link(Block originZero, Block originDestination) {
         this(
-                originZero.getWorld().getUID(), originZero.getX(), originZero.getY(), originZero.getZ(),
+                originZero.getX() % 16, originZero.getY(), originZero.getZ() % 16,
                 originDestination.getWorld().getUID(), originDestination.getX(), originDestination.getY(), originDestination.getZ()
         );
     }
 
-    public UUID worldUid() {
-        return worldUid;
+    public int i() {
+        return i;
     }
 
-    public int x() {
-        return x;
+    public int j() {
+        return j;
     }
 
-    public int y() {
-        return y;
-    }
-
-    public int z() {
-        return z;
+    public int k() {
+        return k;
     }
 
     public UUID destinationWorldUid() {

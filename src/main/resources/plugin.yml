@@ -1,14 +1,18 @@
-name: FixedPortals
-description: Fixed portal destinations
+name: LinkedPortals
+description: Link portals to their destinations
 author: Torm
-main: no.hyp.fixedportals.FixedPortalsPlugin
+main: no.hyp.linkedportals.LinkedPortalsPlugin
 api-version: 1.13
-version: 1.0.0
+version: 2.0.0
 permissions:
-  fixedPortals:
-    description: All FixedPortals permissions.
+  linkedPortals:
+    description: All permissions. Can delete all portal data.
+    default: op
+    children: [linkedPortals.link]
+  linkedPortals.link:
+    description: Link and unlink portals.
     default: op
 commands:
   netherportal:
     description: View and link portals.
-    permission: fixedPortals
+    permission: linkedPortals.link

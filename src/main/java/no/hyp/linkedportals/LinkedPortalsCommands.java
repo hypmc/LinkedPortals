@@ -1,10 +1,6 @@
-package no.hyp.fixedportals;
+package no.hyp.linkedportals;
 
-import no.hyp.fixedportals.persistence.FixedPortalsRepository;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.World;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -15,19 +11,35 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class FixedPortalsCommands implements TabExecutor {
+public class LinkedPortalsCommands implements TabExecutor {
 
     final ChatColor colour = ChatColor.DARK_PURPLE;
 
-    FixedPortalsPlugin plugin;
+    LinkedPortalsPlugin plugin;
 
-    public FixedPortalsCommands(FixedPortalsPlugin plugin) {
+    public LinkedPortalsCommands(LinkedPortalsPlugin plugin) {
         this.plugin = plugin;
     }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] arguments) {
         if (!command.getName().equalsIgnoreCase("netherportal")) return false;
+        if (arguments.length == 1) {
+            if (arguments[0].equalsIgnoreCase("deletenetherportaldata")) {
+                if (!sender.hasPermission("linkedPortals")) {
+                    return false;
+                }
+                for (var w : Bukkit.getWorlds()) { // TODO: Go over all chunks
+                    for (var c : w.getLoadedChunks()) {
+                        c.getPersistentDataContainer().remove(plugin.key);
+                    }
+                }
+                return true;
+            }
+        }
+        if (!sender.hasPermission("linkedPortals.link")) {
+            return false;
+        }
         if (!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "Player only command.");
             return true;
@@ -115,13 +127,8 @@ public class FixedPortalsCommands implements TabExecutor {
             player.sendMessage(ChatColor.RED + "Destination is not a nether portal.");
             return true;
         }
-        try {
-            plugin.saveLink(plugin.repository(), new Link(root, destinationRoot));
-        } catch (FixedPortalsRepository.RepositoryException e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "Error occurred.");
-            return true;
-        }
+        var chunk = root.getChunk();
+        plugin.saveLink(chunk, new Link(root, destinationRoot));
         player.sendMessage(colour + "Linked portal.");
         return true;
     }
@@ -132,24 +139,18 @@ public class FixedPortalsCommands implements TabExecutor {
             player.sendMessage(ChatColor.RED + "Root not found.");
             return true;
         }
-        try {
-            @Nullable Link link = plugin.loadLink(plugin.repository(), root).orElse(null);
-            if (link != null) {
-                @Nullable World world = plugin.getServer().getWorld(link.destinationWorldUid());
-                if (world != null) {
-                    player.sendMessage(String.format(colour + "Portal is linked to " + ChatColor.WHITE + "%s" + colour + ", " + ChatColor.WHITE + "%d" + colour + ", " + ChatColor.WHITE + "%d" + colour + ", " + ChatColor.WHITE + "%d" + colour + ".", world.getName(), link.destinationX(), link.destinationY(), link.destinationZ()));
-                    return true;
-                } else {
-                    player.sendMessage(String.format(ChatColor.RED + "Linked world " + ChatColor.WHITE + "%s" + ChatColor.RED + " is not loaded.", link.destinationWorldUid));
-                    return true;
-                }
+        @Nullable Link link = plugin.loadLink(root).orElse(null);
+        if (link != null) {
+            @Nullable World world = plugin.getServer().getWorld(link.destinationWorldUid());
+            if (world != null) {
+                player.sendMessage(String.format(colour + "Portal is linked to " + ChatColor.WHITE + "%s" + colour + ", " + ChatColor.WHITE + "%d" + colour + ", " + ChatColor.WHITE + "%d" + colour + ", " + ChatColor.WHITE + "%d" + colour + ".", world.getName(), link.destinationX(), link.destinationY(), link.destinationZ()));
+                return true;
             } else {
-                player.sendMessage(colour + "Portal is not linked.");
+                player.sendMessage(String.format(ChatColor.RED + "Linked world " + ChatColor.WHITE + "%s" + ChatColor.RED + " is not loaded.", link.destinationWorldUid));
                 return true;
             }
-        } catch (FixedPortalsRepository.RepositoryException e) {
-            e.printStackTrace();
-            player.sendMessage(ChatColor.RED + "Error occurred.");
+        } else {
+            player.sendMessage(colour + "Portal is not linked.");
             return true;
         }
     }
